@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /Q/{allPaths=**} {
+    allow create: if request.resource.size < 30 * 1024 * 1024 && request.auth.uid != null;
+    allow update: if request.resource.size < 30 * 1024 * 1024 && resource.metadata.owners.matches('^.*' + request.auth.uid + '.*$');
+    allow list, get: if resource.metadata.owners.matches('^.*' + request.auth.uid + '.*$');
+    allow delete: if false;
+    }
+
+    match /U/{userId}/{allPaths=**} {
+    	allow create, update: if request.resource.size < 1024 * 1024 && userId == request.auth.uid;
+      allow list, get: if userId == request.auth.uid;
+      allow delete: if false;
+    }
+  }
+}

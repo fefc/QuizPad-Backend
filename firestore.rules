@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /Q/{quizId} {
+      allow create: if existsAfter(/databases/$(database)/documents/Q/$(quizId)/U/$(request.auth.uid));
+      allow delete: if false;
+      allow list: if exists(/databases/$(database)/documents/Q/$(quizId)/U/$(request.auth.uid));
+      allow update, get: if exists(/databases/$(database)/documents/Q/$(quizId)/U/$(request.auth.uid));
+    }
+
+		match /Q/{quizId}/U/{userId} {
+      allow create: if userId == request.auth.uid && existsAfter(/databases/$(database)/documents/U/$(userId)/Q/$(quizId));
+      allow delete: if userId == request.auth.uid && !existsAfter(/databases/$(database)/documents/U/$(userId)/Q/$(quizId));
+      allow list: if userId == request.auth.uid;
+      allow update, get: if false;
+    }
+
+    match /Q/{quizId}/C/{categoryId} {
+      allow read, write: if existsAfter(/databases/$(database)/documents/Q/$(quizId)/U/$(request.auth.uid));
+    }
+
+  	match /Q/{quizId}/Q/{questionId} {
+      allow read, write: if exists(/databases/$(database)/documents/Q/$(quizId)/U/$(request.auth.uid));
+    }
+
+		match /U/{userId} {
+      allow read, write: if userId == request.auth.uid;
+    }
+
+    match /U/{userId}/Q/{quizId} {
+      allow create: if userId == request.auth.uid && existsAfter(/databases/$(database)/documents/Q/$(quizId)/U/$(userId));
+      allow delete: if userId == request.auth.uid && !existsAfter(/databases/$(database)/documents/Q/$(quizId)/U/$(userId));
+      allow list: if userId == request.auth.uid;
+      allow update, get: if false;
+    }
+
+    match /G/{gameId=**} {
+    	allow read, write;
+    }
+  }
+}
