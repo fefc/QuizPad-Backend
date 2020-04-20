@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["http://192.168.25.106:8000/", "http://localhost/"],
+    "origin": ["https://web.quizpadapp.com/", "http://localhost/"],
     "responseHeader": ["Content-Type"],
     "method": ["GET"],
     "maxAgeSeconds": 3600
